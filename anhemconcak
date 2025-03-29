@@ -66,9 +66,9 @@ local function createButton(name, position, text)
 end
 
 -- Tạo các nút
-local npcButton = createButton("NPCLock", UDim2.new(0.5, -80, 0, 70), "NPC Lock: OFF")
-local noclipButton = createButton("NoClip", UDim2.new(0.5, -80, 0, 120), "NoClip: OFF")
-local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -80, 0, 170), "Nhìn Trong Đêm: OFF")
+local npcButton = createButton("NPCLock", UDim2.new(0.5, -80, 0, 70), "NPC Lock: OFF (N)")
+local noclipButton = createButton("NoClip", UDim2.new(0.5, -80, 0, 120), "NoClip: OFF (C)")
+local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -80, 0, 170), "Nhìn Trong Đêm: OFF (V)")
 
 -- Hàm làm đối tượng có thể kéo thả
 local function makeDraggable(frame)
@@ -138,7 +138,7 @@ end
 
 local function toggleNPCLock(state)
     npcLock = state
-    npcButton.Text = npcLock and "NPC Lock: ON" or "NPC Lock: OFF"
+    npcButton.Text = npcLock and "NPC Lock: ON (N)" or "NPC Lock: OFF (N)"
     
     if npcLock then
         if not toggleLoop then
@@ -179,37 +179,64 @@ end)
 -- Logic NoClip
 local noclip = false
 local noclipConnection
+local lastSafePosition -- Lưu vị trí an toàn trước khi bật NoClip
 
 local function toggleNoClip(state)
     noclip = state
-    if noclipConnection then
-        noclipConnection:Disconnect()
-        noclipConnection = nil
-    end
+    noclipButton.Text = noclip and "NoClip: ON (C)" or "NoClip: OFF (C)"
+    
     if noclip then
-        noclipConnection = runService.Stepped:Connect(function()
-            if player.Character then
-                for _, part in ipairs(player.Character:GetChildren()) do
-                    if part:IsA("BasePart") then
-                        part.CanCollide = false
+        -- Lưu vị trí an toàn khi bật NoClip
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            lastSafePosition = player.Character.HumanoidRootPart.CFrame
+        end
+        
+        if not noclipConnection then
+            noclipConnection = runService.Stepped:Connect(function()
+                if player.Character then
+                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        -- Kiểm tra tọa độ Y
+                        if hrp.Position.Y < 2.4 then
+                            -- Dịch chuyển về vị trí an toàn với Y = 3
+                            if lastSafePosition then
+                                hrp.CFrame = CFrame.new(lastSafePosition.X, 3, lastSafePosition.Z)
+                            end
+                            -- Tắt NoClip
+                            toggleNoClip(false)
+                            return
+                        end
+                        -- Cập nhật vị trí an toàn nếu Y >= 3
+                        if hrp.Position.Y >= 3 then
+                            lastSafePosition = hrp.CFrame
+                        end
+                        -- Áp dụng NoClip
+                        for _, part in ipairs(player.Character:GetChildren()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = false
+                            end
+                        end
                     end
                 end
-            end
-        end)
+            end)
+        end
+    else
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
     end
 end
 
 noclipButton.MouseButton1Click:Connect(function()
     toggleNoClip(not noclip)
-    noclipButton.Text = noclip and "NoClip: ON" or "NoClip: OFF"
 end)
 
 -- Logic Nhìn Trong Đêm
 local nightVisionEnabled = false
-local defaultLighting = {} -- Lưu trữ trạng thái ánh sáng mặc định
-local nightVisionLoop -- Biến để lưu kết nối vòng lặp
+local defaultLighting = {}
+local nightVisionLoop
 
--- Lưu trạng thái ánh sáng ban đầu khi script khởi chạy
 local function saveDefaultLighting()
     defaultLighting.Ambient = Lighting.Ambient or Color3.fromRGB(0, 0, 0)
     defaultLighting.Brightness = Lighting.Brightness or 1
@@ -220,39 +247,34 @@ local function saveDefaultLighting()
     defaultLighting.FogColor = Lighting.FogColor or Color3.fromRGB(192, 192, 192)
 end
 
--- Áp dụng và đóng băng Night Vision
 local function applyNightVision()
     nightVisionEnabled = true
-    nightVisionButton.Text = "Nhìn Trong Đêm: ON"
+    nightVisionButton.Text = "Nhìn Trong Đêm: ON (V)"
     
-    -- Đóng băng giá trị bằng vòng lặp
     if not nightVisionLoop then
         nightVisionLoop = runService.RenderStepped:Connect(function()
             if nightVisionEnabled then
-                Lighting.Ambient = Color3.fromRGB(255, 255, 255) -- Ánh sáng trắng tối đa
-                Lighting.Brightness = 3 -- Độ sáng cao
-                Lighting.GlobalShadows = false -- Tắt bóng
-                Lighting.ClockTime = 12 -- Giữ ở giữa trưa
+                Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+                Lighting.Brightness = 3
+                Lighting.GlobalShadows = false
+                Lighting.ClockTime = 12
                 Lighting.TimeOfDay = "12:00:00"
-                Lighting.FogEnd = 100000 -- Giảm sương mù tối đa
-                Lighting.FogColor = Color3.fromRGB(255, 255, 255) -- Sương trắng
+                Lighting.FogEnd = 100000
+                Lighting.FogColor = Color3.fromRGB(255, 255, 255)
             end
         end)
     end
 end
 
--- Khôi phục ánh sáng mặc định và ngắt đóng băng
 local function disableNightVision()
     nightVisionEnabled = false
-    nightVisionButton.Text = "Nhìn Trong Đêm: OFF"
+    nightVisionButton.Text = "Nhìn Trong Đêm: OFF (V)"
     
-    -- Ngắt vòng lặp đóng băng
     if nightVisionLoop then
         nightVisionLoop:Disconnect()
         nightVisionLoop = nil
     end
     
-    -- Khôi phục trạng thái ban đầu
     Lighting.Ambient = defaultLighting.Ambient
     Lighting.Brightness = defaultLighting.Brightness
     Lighting.GlobalShadows = defaultLighting.GlobalShadows
@@ -265,12 +287,29 @@ end
 -- Gọi hàm lưu trữ ngay khi script chạy
 saveDefaultLighting()
 
--- Bật/tắt thủ công bằng nút
 nightVisionButton.MouseButton1Click:Connect(function()
     if nightVisionEnabled then
         disableNightVision()
     else
         applyNightVision()
+    end
+end)
+
+-- Gắn phím tắt
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end -- Bỏ qua nếu đang nhập text trong GUI
+    
+    local key = input.KeyCode
+    if key == Enum.KeyCode.N then -- Phím N cho NPC Lock
+        toggleNPCLock(not npcLock)
+    elseif key == Enum.KeyCode.C then -- Phím C cho NoClip
+        toggleNoClip(not noclip)
+    elseif key == Enum.KeyCode.V then -- Phím V cho Night Vision
+        if nightVisionEnabled then
+            disableNightVision()
+        else
+            applyNightVision()
+        end
     end
 end)
 
