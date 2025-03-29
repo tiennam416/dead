@@ -197,7 +197,7 @@ local function toggleNoClip(state)
                     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
                     if hrp then
                         -- Kiểm tra tọa độ Y
-                        if hrp.Position.Y < 2.4 then
+                        if hrp.Position.Y < 2.5 then
                             -- Dịch chuyển về vị trí an toàn với Y = 3
                             if lastSafePosition then
                                 hrp.CFrame = CFrame.new(lastSafePosition.X, 3, lastSafePosition.Z)
