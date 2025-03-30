@@ -10,7 +10,7 @@ local TweenService = game:GetService("TweenService")
 
 -- Thông báo khởi đầu
 StarterGui:SetCore("SendNotification", {
-    Title = "AnhemConCak Menu",
+    Title = "AnhemconCak Menu",
     Text = "Created by TienDaiCa",
     Duration = 3
 })
@@ -70,6 +70,7 @@ end
 local npcButton = createButton("NPCLock", UDim2.new(0.5, -80, 0, 70), "NPC Lock: OFF (N)")
 local noclipButton = createButton("NoClip", UDim2.new(0.5, -80, 0, 120), "NoClip: OFF (C)")
 local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -80, 0, 170), "Nhìn Trong Đêm: OFF (V)")
+local collectMoneyButton = createButton("CollectMoney", UDim2.new(0.5, -80, 0, 220), "Thu Túi Tiền: OFF (M)")
 
 -- Hàm làm đối tượng có thể kéo thả
 local function makeDraggable(frame)
@@ -122,7 +123,7 @@ local function getClosestNPC()
         if object:IsA("Model") then
             local humanoid = object:FindFirstChild("Humanoid")
             local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
-            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" and object.Name ~= "Wolf" then
+            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" and object.Name ~= "Woft" and object.Name ~= "Wolf" then
                 local isPlayer = Players:GetPlayerFromCharacter(object) ~= nil
                 if not isPlayer then
                     local distance = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
@@ -266,7 +267,7 @@ local function applyNightVision()
         nightVisionLoop = runService.RenderStepped:Connect(function()
             if nightVisionEnabled then
                 Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-                Lighting.Brightness = 1
+                Lighting.Brightness = 3
                 Lighting.GlobalShadows = false
                 Lighting.ClockTime = 12
                 Lighting.TimeOfDay = "12:00:00"
@@ -306,6 +307,43 @@ nightVisionButton.MouseButton1Click:Connect(function()
     end
 end)
 
+-- Logic Thu Túi Tiền (Bật/Tắt)
+local moneyCollectionEnabled = false
+local moneyCollectionLoop
+
+local function toggleMoneyCollection(state)
+    moneyCollectionEnabled = state
+    collectMoneyButton.Text = moneyCollectionEnabled and "Thu Túi Tiền: ON (M)" or "Thu Túi Tiền: OFF (M)"
+    
+    if moneyCollectionEnabled then
+        if not moneyCollectionLoop then
+            moneyCollectionLoop = runService.Heartbeat:Connect(function()
+                local moneyBagContainer = workspace:FindFirstChild("RuntimeItems") and workspace.RuntimeItems:FindFirstChild("Moneybag")
+                if not moneyBagContainer then return end
+                
+                local moneyBags = moneyBagContainer:GetChildren()
+                for _, moneyBag in ipairs(moneyBags) do
+                    if moneyBag.Name == "MoneyBag" then
+                        local prompt = moneyBag:FindFirstChild("CollectPrompt")
+                        if prompt and prompt:IsA("ProximityPrompt") then
+                            fireproximityprompt(prompt) -- Tự động nhặt tiền
+                        end
+                    end
+                end
+            end)
+        end
+    else
+        if moneyCollectionLoop then
+            moneyCollectionLoop:Disconnect()
+            moneyCollectionLoop = nil
+        end
+    end
+end
+
+collectMoneyButton.MouseButton1Click:Connect(function()
+    toggleMoneyCollection(not moneyCollectionEnabled)
+end)
+
 -- Gắn phím tắt
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end -- Bỏ qua nếu đang nhập text trong GUI
@@ -321,6 +359,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         else
             applyNightVision()
         end
+    elseif key == Enum.KeyCode.M then -- Phím M cho Thu Túi Tiền
+        toggleMoneyCollection(not moneyCollectionEnabled)
     end
 end)
 
