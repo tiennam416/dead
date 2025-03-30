@@ -6,11 +6,12 @@ local StarterGui = game:GetService("StarterGui")
 local camera = workspace.CurrentCamera
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
+local TweenService = game:GetService("TweenService")
 
 -- Thông báo khởi đầu
 StarterGui:SetCore("SendNotification", {
-    Title = "Utility Menu",
-    Text = "Created by GioBolqvi",
+    Title = "AnhemConCak Menu",
+    Text = "Created by TienDaiCa",
     Duration = 3
 })
 
@@ -121,7 +122,7 @@ local function getClosestNPC()
         if object:IsA("Model") then
             local humanoid = object:FindFirstChild("Humanoid")
             local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
-            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" then
+            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" and object.Name ~= "Wolf" then
                 local isPlayer = Players:GetPlayerFromCharacter(object) ~= nil
                 if not isPlayer then
                     local distance = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
@@ -198,16 +199,26 @@ local function toggleNoClip(state)
                     if hrp then
                         -- Kiểm tra tọa độ Y
                         if hrp.Position.Y < 2.5 then
-                            -- Dịch chuyển về vị trí an toàn với Y = 3
+                            -- Tính khoảng cách và thời gian tween
                             if lastSafePosition then
-                                hrp.CFrame = CFrame.new(lastSafePosition.X, 3, lastSafePosition.Z)
+                                local targetPosition = Vector3.new(lastSafePosition.X, 2.5, lastSafePosition.Z)
+                                local currentPosition = hrp.Position
+                                local distance = (targetPosition - currentPosition).Magnitude
+                                local tweenTime = distance * 0.5 -- 1 stud = 0.5 giây
+                                
+                                -- Tạo tween
+                                local tweenInfo = TweenInfo.new(tweenTime, Enum.EasingStyle.Linear)
+                                local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPosition)})
+                                tween:Play()
+                                
+                                -- Chờ tween hoàn thành rồi tắt NoClip
+                                tween.Completed:Wait()
+                                toggleNoClip(false)
                             end
-                            -- Tắt NoClip
-                            toggleNoClip(false)
                             return
                         end
-                        -- Cập nhật vị trí an toàn nếu Y >= 3
-                        if hrp.Position.Y >= 3 then
+                        -- Cập nhật vị trí an toàn nếu Y >= 2.5
+                        if hrp.Position.Y >= 2.5 then
                             lastSafePosition = hrp.CFrame
                         end
                         -- Áp dụng NoClip
@@ -255,7 +266,7 @@ local function applyNightVision()
         nightVisionLoop = runService.RenderStepped:Connect(function()
             if nightVisionEnabled then
                 Lighting.Ambient = Color3.fromRGB(255, 255, 255)
-                Lighting.Brightness = 3
+                Lighting.Brightness = 1
                 Lighting.GlobalShadows = false
                 Lighting.ClockTime = 12
                 Lighting.TimeOfDay = "12:00:00"
