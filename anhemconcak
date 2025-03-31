@@ -57,7 +57,7 @@ local function createTabButton(name, position, text)
     button.Name = name
     button.Size = UDim2.new(0.5, 0, 1, 0)
     button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Màu tím đậm cho tab
+    button.BackgroundColor3 = Color3.fromRGB(70, 50, 90) -- Màu tím đậm cho tab
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
