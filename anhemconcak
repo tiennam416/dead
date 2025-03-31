@@ -38,7 +38,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "AnhemConcak Menu"
+title.Text = "Utility Menu"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
@@ -57,7 +57,7 @@ local function createTabButton(name, position, text)
     button.Name = name
     button.Size = UDim2.new(0.5, 0, 1, 0)
     button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(70, 50, 90) -- Màu tím đậm cho tab
+    button.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
@@ -71,8 +71,8 @@ local function createTabButton(name, position, text)
     return button
 end
 
-local tab1Button = createTabButton("Tab1", UDim2.new(0, 0, 0, 0), "Main")
-local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Auto ")
+local tab1Button = createTabButton("Tab1", UDim2.new(0, 0, 0, 0), "Utilities")
+local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Money")
 
 -- Tạo Content Frame
 local contentFrame = Instance.new("Frame")
@@ -117,6 +117,7 @@ end
 local npcButton = createButton("NPCLock", UDim2.new(0.5, -100, 0, 20), "NPC Lock: OFF (N)", tab1Content)
 local noclipButton = createButton("NoClip", UDim2.new(0.5, -100, 0, 70), "NoClip: OFF (C)", tab1Content)
 local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -100, 0, 120), "Nhìn Trong Đêm: OFF (V)", tab1Content)
+local espButton = createButton("ESP", UDim2.new(0.5, -100, 0, 170), "ESP: OFF (E)", tab1Content) -- Nút ESP mới
 
 -- Tab 2: Money
 local collectMoneyButton = createButton("CollectMoney", UDim2.new(0.5, -100, 0, 20), "Thu Túi Tiền: OFF (M)", tab2Content)
@@ -149,16 +150,16 @@ local sliderLabel = Instance.new("TextLabel")
 sliderLabel.Size = UDim2.new(0, 50, 0, 20)
 sliderLabel.Position = UDim2.new(0.5, -25, 0, -20)
 sliderLabel.BackgroundTransparency = 1
-sliderLabel.Text = "Health: 50"
+sliderLabel.Text = "Health: 100"
 sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 sliderLabel.Font = Enum.Font.Gotham
 sliderLabel.TextSize = 14
 sliderLabel.Parent = healthSliderFrame
 
--- Logic thanh chỉnh máu (Hỗ trợ cả PC và Mobile)
+-- Logic thanh chỉnh máu
 local minHealth = 10
 local maxHealth = 100
-local healthThreshold = 50
+local healthThreshold = 100
 local isDragging = false
 
 local function updateSlider(positionX)
@@ -169,7 +170,6 @@ local function updateSlider(positionX)
     sliderLabel.Text = "Health: " .. healthThreshold
 end
 
--- Sự kiện cho cả PC và Mobile
 sliderBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         isDragging = true
@@ -408,6 +408,81 @@ nightVisionButton.MouseButton1Click:Connect(function()
     if nightVisionEnabled then disableNightVision() else applyNightVision() end
 end)
 
+-- Logic ESP
+local espEnabled = false
+local espConnections = {}
+
+local function createESP(model)
+    local humanoid = model:FindFirstChild("Humanoid")
+    local head = model:FindFirstChild("Head")
+    if not humanoid or not head then return end
+
+    local billboard = Instance.new("BillboardGui")
+    billboard.Name = "ESP"
+    billboard.Parent = head
+    billboard.Adornee = head
+    billboard.Size = UDim2.new(0, 80, 0, 40)
+    billboard.StudsOffset = Vector3.new(0, 2, 0)
+    billboard.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboard
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
+    textLabel.TextScaled = true
+    textLabel.Font = Enum.Font.SourceSans
+    textLabel.TextSize = 30
+
+    local function updateESP()
+        if humanoid and humanoid.Parent and espEnabled then
+            textLabel.Text = model.Name .. "\nHP: " .. math.floor(humanoid.Health) .. "/" .. humanoid.MaxHealth
+        else
+            billboard:Destroy()
+        end
+    end
+
+    local connection = humanoid.HealthChanged:Connect(updateESP)
+    table.insert(espConnections, connection)
+    updateESP()
+end
+
+local function toggleESP(state)
+    espEnabled = state
+    espButton.Text = espEnabled and "ESP: ON (E)" or "ESP: OFF (E)"
+    if espEnabled then
+        -- Áp dụng ESP cho các model hiện có
+        for _, model in pairs(workspace:GetChildren()) do
+            if model:IsA("Model") and model:FindFirstChild("Humanoid") and Players:GetPlayerFromCharacter(model) == nil then
+                createESP(model)
+            end
+        end
+        -- Kết nối cho các model mới
+        if not espConnections["ChildAdded"] then
+            espConnections["ChildAdded"] = workspace.ChildAdded:Connect(function(child)
+                if espEnabled and child:IsA("Model") and child:FindFirstChild("Humanoid") and Players:GetPlayerFromCharacter(child) == nil then
+                    createESP(child)
+                end
+            end)
+        end
+    else
+        -- Xóa tất cả ESP
+        for _, model in pairs(workspace:GetDescendants()) do
+            if model:IsA("BasePart") then
+                local esp = model:FindFirstChild("ESP")
+                if esp then esp:Destroy() end
+            end
+        end
+        -- Ngắt kết nối
+        for _, connection in pairs(espConnections) do
+            if connection then connection:Disconnect() end
+        end
+        espConnections = {}
+    end
+end
+
+espButton.MouseButton1Click:Connect(function() toggleESP(not espEnabled) end)
+
 -- Logic Thu Túi Tiền
 local moneyCollectionEnabled = false
 local moneyCollectionLoop
@@ -513,6 +588,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         toggleNoClip(not noclip)
     elseif key == Enum.KeyCode.V then
         if nightVisionEnabled then disableNightVision() else applyNightVision() end
+    elseif key == Enum.KeyCode.E then
+        toggleESP(not espEnabled)
     elseif key == Enum.KeyCode.M then
         toggleMoneyCollection(not moneyCollectionEnabled)
     elseif key == Enum.KeyCode.B then
