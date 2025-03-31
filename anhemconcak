@@ -149,7 +149,7 @@ local sliderLabel = Instance.new("TextLabel")
 sliderLabel.Size = UDim2.new(0, 50, 0, 20)
 sliderLabel.Position = UDim2.new(0.5, -25, 0, -20)
 sliderLabel.BackgroundTransparency = 1
-sliderLabel.Text = "Health: 100"
+sliderLabel.Text = "Health: 50"
 sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 sliderLabel.Font = Enum.Font.Gotham
 sliderLabel.TextSize = 14
@@ -158,7 +158,7 @@ sliderLabel.Parent = healthSliderFrame
 -- Logic thanh chỉnh máu (Hỗ trợ cả PC và Mobile)
 local minHealth = 10
 local maxHealth = 100
-local healthThreshold = 100
+local healthThreshold = 50
 local isDragging = false
 
 local function updateSlider(positionX)
