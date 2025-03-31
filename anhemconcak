@@ -38,7 +38,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "AnhemConCak Menu"
+title.Text = "AnhemConcak Menu"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
@@ -48,7 +48,7 @@ title.Parent = mainFrame
 local tabFrame = Instance.new("Frame")
 tabFrame.Size = UDim2.new(1, 0, 0, 40)
 tabFrame.Position = UDim2.new(0, 0, 0, 40)
-tabFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+tabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 tabFrame.BorderSizePixel = 0
 tabFrame.Parent = mainFrame
 
@@ -57,7 +57,7 @@ local function createTabButton(name, position, text)
     button.Name = name
     button.Size = UDim2.new(0.5, 0, 1, 0)
     button.Position = position
-    button.BackgroundColor3 = - Color3.fromRGB(40, 40, 40)
+    button.BackgroundColor3 = Color3.fromRGB(40, 40, 40) -- Màu tím đậm cho tab
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
@@ -72,7 +72,7 @@ local function createTabButton(name, position, text)
 end
 
 local tab1Button = createTabButton("Tab1", UDim2.new(0, 0, 0, 0), "Main")
-local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Auto")
+local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Auto ")
 
 -- Tạo Content Frame
 local contentFrame = Instance.new("Frame")
