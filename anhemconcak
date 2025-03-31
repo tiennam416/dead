@@ -17,47 +17,52 @@ StarterGui:SetCore("SendNotification", {
 
 -- Tạo ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "UtilityMenu"
+screenGui.Name = "AnhemconCak"
 screenGui.Parent = game:GetService("CoreGui")
 screenGui.ResetOnSpawn = false
 
 -- Tạo Frame chính cho menu
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 200, 0, 250)
-mainFrame.Position = UDim2.new(0.5, -100, 0.5, -125)
+mainFrame.Size = UDim2.new(0, 250, 0, 350)
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -175)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 mainFrame.Visible = false
 
--- Thêm UICorner cho Frame
 local frameCorner = Instance.new("UICorner")
 frameCorner.CornerRadius = UDim.new(0, 10)
 frameCorner.Parent = mainFrame
 
--- Thêm tiêu đề
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "Utility Menu"
+title.Text = "AnhemconCak Menu"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.Parent = mainFrame
 
--- Hàm tạo nút
-local function createButton(name, position, text)
+-- Tạo Tab Frame
+local tabFrame = Instance.new("Frame")
+tabFrame.Size = UDim2.new(1, 0, 0, 40)
+tabFrame.Position = UDim2.new(0, 0, 0, 40)
+tabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+tabFrame.BorderSizePixel = 0
+tabFrame.Parent = mainFrame
+
+local function createTabButton(name, position, text)
     local button = Instance.new("TextButton")
     button.Name = name
-    button.Size = UDim2.new(0, 160, 0, 40)
+    button.Size = UDim2.new(0.5, 0, 1, 0)
     button.Position = position
     button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
     button.TextSize = 16
-    button.Parent = mainFrame
+    button.Parent = tabFrame
     
     local buttonCorner = Instance.new("UICorner")
     buttonCorner.CornerRadius = UDim.new(0, 8)
@@ -66,13 +71,116 @@ local function createButton(name, position, text)
     return button
 end
 
--- Tạo các nút
-local npcButton = createButton("NPCLock", UDim2.new(0.5, -80, 0, 70), "NPC Lock: OFF (N)")
-local noclipButton = createButton("NoClip", UDim2.new(0.5, -80, 0, 120), "NoClip: OFF (C)")
-local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -80, 0, 170), "Nhìn Trong Đêm: OFF (V)")
-local collectMoneyButton = createButton("CollectMoney", UDim2.new(0.5, -80, 0, 220), "Thu Túi Tiền: OFF (M)")
+local tab1Button = createTabButton("Tab1", UDim2.new(0, 0, 0, 0), "Main")
+local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Auto")
 
--- Hàm làm đối tượng có thể kéo thả
+-- Tạo Content Frame
+local contentFrame = Instance.new("Frame")
+contentFrame.Size = UDim2.new(1, 0, 0, 270)
+contentFrame.Position = UDim2.new(0, 0, 0, 80)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
+
+local tab1Content = Instance.new("Frame")
+tab1Content.Size = UDim2.new(1, 0, 1, 0)
+tab1Content.BackgroundTransparency = 1
+tab1Content.Parent = contentFrame
+tab1Content.Visible = true
+
+local tab2Content = Instance.new("Frame")
+tab2Content.Size = UDim2.new(1, 0, 1, 0)
+tab2Content.BackgroundTransparency = 1
+tab2Content.Parent = contentFrame
+tab2Content.Visible = false
+
+-- Hàm tạo nút
+local function createButton(name, position, text, parent)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Size = UDim2.new(0, 200, 0, 40)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 16
+    button.Parent = parent
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 8)
+    buttonCorner.Parent = button
+    
+    return button
+end
+
+-- Tab 1: Utilities
+local npcButton = createButton("NPCLock", UDim2.new(0.5, -100, 0, 20), "NPC Lock: OFF (N)", tab1Content)
+local noclipButton = createButton("NoClip", UDim2.new(0.5, -100, 0, 70), "NoClip: OFF (C)", tab1Content)
+local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -100, 0, 120), "Nhìn Trong Đêm: OFF (V)", tab1Content)
+
+-- Tab 2: Money
+local collectMoneyButton = createButton("CollectMoney", UDim2.new(0.5, -100, 0, 20), "Thu Túi Tiền: OFF (M)", tab2Content)
+local bandagePickupButton = createButton("AutoBandagePickup", UDim2.new(0.5, -100, 0, 70), "Nhặt Băng: OFF (B)", tab2Content)
+local bandageUseButton = createButton("AutoBandageUse", UDim2.new(0.5, -100, 0, 120), "Dùng Băng: OFF (U)", tab2Content)
+
+-- Thanh chỉnh máu
+local healthSliderFrame = Instance.new("Frame")
+healthSliderFrame.Size = UDim2.new(0, 200, 0, 30)
+healthSliderFrame.Position = UDim2.new(0.5, -100, 0, 170)
+healthSliderFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+healthSliderFrame.Parent = tab2Content
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(0, 8)
+sliderCorner.Parent = healthSliderFrame
+
+local sliderBar = Instance.new("Frame")
+sliderBar.Size = UDim2.new(0.9, 0, 0.3, 0)
+sliderBar.Position = UDim2.new(0.05, 0, 0.35, 0)
+sliderBar.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+sliderBar.Parent = healthSliderFrame
+
+local sliderKnob = Instance.new("Frame")
+sliderKnob.Size = UDim2.new(0.05, 0, 1, 0)
+sliderKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sliderKnob.Parent = sliderBar
+
+local sliderLabel = Instance.new("TextLabel")
+sliderLabel.Size = UDim2.new(0, 50, 0, 20)
+sliderLabel.Position = UDim2.new(0.5, -25, 0, -20)
+sliderLabel.BackgroundTransparency = 1
+sliderLabel.Text = "Health: 100"
+sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+sliderLabel.Font = Enum.Font.Gotham
+sliderLabel.TextSize = 14
+sliderLabel.Parent = healthSliderFrame
+
+-- Logic thanh chỉnh máu
+local minHealth = 10
+local maxHealth = 100
+local healthThreshold = 100
+
+local function updateSlider(input)
+    local sliderWidth = sliderBar.AbsoluteSize.X
+    local knobPos = math.clamp(input.Position.X - sliderBar.AbsolutePosition.X, 0, sliderWidth)
+    sliderKnob.Position = UDim2.new(0, knobPos, 0, 0)
+    healthThreshold = math.floor(minHealth + (maxHealth - minHealth) * (knobPos / sliderWidth))
+    sliderLabel.Text = "Health: " .. healthThreshold
+end
+
+sliderBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        updateSlider(input)
+    end
+end)
+
+sliderBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and input.UserInputState == Enum.UserInputState.Change then
+        updateSlider(input)
+    end
+end)
+
+-- Hàm kéo thả
 local function makeDraggable(frame)
     local dragging = false
     local dragInput, dragStart, startPos
@@ -83,11 +191,10 @@ local function makeDraggable(frame)
     end
 
     frame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
-
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -97,7 +204,7 @@ local function makeDraggable(frame)
     end)
 
     frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             dragInput = input
         end
     end)
@@ -111,6 +218,17 @@ end
 
 makeDraggable(mainFrame)
 
+-- Chuyển đổi tab
+local function switchTab(tabToShow, tabToHide)
+    tabToShow.Visible = true
+    tabToHide.Visible = false
+    tab1Button.BackgroundColor3 = tabToShow == tab1Content and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
+    tab2Button.BackgroundColor3 = tabToShow == tab2Content and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
+end
+
+tab1Button.MouseButton1Click:Connect(function() switchTab(tab1Content, tab2Content) end)
+tab2Button.MouseButton1Click:Connect(function() switchTab(tab2Content, tab1Content) end)
+
 -- Logic NPC Lock
 local npcLock = false
 local toggleLoop
@@ -118,7 +236,6 @@ local toggleLoop
 local function getClosestNPC()
     local closestNPC = nil
     local closestDistance = math.huge
-
     for _, object in ipairs(workspace:GetDescendants()) do
         if object:IsA("Model") then
             local humanoid = object:FindFirstChild("Humanoid")
@@ -141,7 +258,6 @@ end
 local function toggleNPCLock(state)
     npcLock = state
     npcButton.Text = npcLock and "NPC Lock: ON (N)" or "NPC Lock: OFF (N)"
-    
     if npcLock then
         if not toggleLoop then
             toggleLoop = runService.RenderStepped:Connect(function()
@@ -174,55 +290,41 @@ local function toggleNPCLock(state)
     end
 end
 
-npcButton.MouseButton1Click:Connect(function()
-    toggleNPCLock(not npcLock)
-end)
+npcButton.MouseButton1Click:Connect(function() toggleNPCLock(not npcLock) end)
 
 -- Logic NoClip
 local noclip = false
 local noclipConnection
-local lastSafePosition -- Lưu vị trí an toàn trước khi bật NoClip
+local lastSafePosition
 
 local function toggleNoClip(state)
     noclip = state
     noclipButton.Text = noclip and "NoClip: ON (C)" or "NoClip: OFF (C)"
-    
     if noclip then
-        -- Lưu vị trí an toàn khi bật NoClip
         if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             lastSafePosition = player.Character.HumanoidRootPart.CFrame
         end
-        
         if not noclipConnection then
             noclipConnection = runService.Stepped:Connect(function()
                 if player.Character then
                     local hrp = player.Character:FindFirstChild("HumanoidRootPart")
                     if hrp then
-                        -- Kiểm tra tọa độ Y
                         if hrp.Position.Y < 2.5 then
-                            -- Tính khoảng cách và thời gian tween
                             if lastSafePosition then
                                 local targetPosition = Vector3.new(lastSafePosition.X, 2.5, lastSafePosition.Z)
-                                local currentPosition = hrp.Position
-                                local distance = (targetPosition - currentPosition).Magnitude
-                                local tweenTime = distance * 0.5 -- 1 stud = 0.5 giây
-                                
-                                -- Tạo tween
+                                local distance = (targetPosition - hrp.Position).Magnitude
+                                local tweenTime = distance * 0.5
                                 local tweenInfo = TweenInfo.new(tweenTime, Enum.EasingStyle.Linear)
                                 local tween = TweenService:Create(hrp, tweenInfo, {CFrame = CFrame.new(targetPosition)})
                                 tween:Play()
-                                
-                                -- Chờ tween hoàn thành rồi tắt NoClip
                                 tween.Completed:Wait()
                                 toggleNoClip(false)
                             end
                             return
                         end
-                        -- Cập nhật vị trí an toàn nếu Y >= 2.5
                         if hrp.Position.Y >= 2.5 then
                             lastSafePosition = hrp.CFrame
                         end
-                        -- Áp dụng NoClip
                         for _, part in ipairs(player.Character:GetChildren()) do
                             if part:IsA("BasePart") then
                                 part.CanCollide = false
@@ -240,9 +342,7 @@ local function toggleNoClip(state)
     end
 end
 
-noclipButton.MouseButton1Click:Connect(function()
-    toggleNoClip(not noclip)
-end)
+noclipButton.MouseButton1Click:Connect(function() toggleNoClip(not noclip) end)
 
 -- Logic Nhìn Trong Đêm
 local nightVisionEnabled = false
@@ -262,7 +362,6 @@ end
 local function applyNightVision()
     nightVisionEnabled = true
     nightVisionButton.Text = "Nhìn Trong Đêm: ON (V)"
-    
     if not nightVisionLoop then
         nightVisionLoop = runService.RenderStepped:Connect(function()
             if nightVisionEnabled then
@@ -281,12 +380,10 @@ end
 local function disableNightVision()
     nightVisionEnabled = false
     nightVisionButton.Text = "Nhìn Trong Đêm: OFF (V)"
-    
     if nightVisionLoop then
         nightVisionLoop:Disconnect()
         nightVisionLoop = nil
     end
-    
     Lighting.Ambient = defaultLighting.Ambient
     Lighting.Brightness = defaultLighting.Brightness
     Lighting.GlobalShadows = defaultLighting.GlobalShadows
@@ -296,37 +393,30 @@ local function disableNightVision()
     Lighting.FogColor = defaultLighting.FogColor
 end
 
--- Gọi hàm lưu trữ ngay khi script chạy
 saveDefaultLighting()
 
 nightVisionButton.MouseButton1Click:Connect(function()
-    if nightVisionEnabled then
-        disableNightVision()
-    else
-        applyNightVision()
-    end
+    if nightVisionEnabled then disableNightVision() else applyNightVision() end
 end)
 
--- Logic Thu Túi Tiền (Bật/Tắt)
+-- Logic Thu Túi Tiền
 local moneyCollectionEnabled = false
 local moneyCollectionLoop
 
 local function toggleMoneyCollection(state)
     moneyCollectionEnabled = state
     collectMoneyButton.Text = moneyCollectionEnabled and "Thu Túi Tiền: ON (M)" or "Thu Túi Tiền: OFF (M)"
-    
     if moneyCollectionEnabled then
         if not moneyCollectionLoop then
             moneyCollectionLoop = runService.Heartbeat:Connect(function()
                 local moneyBagContainer = workspace:FindFirstChild("RuntimeItems") and workspace.RuntimeItems:FindFirstChild("Moneybag")
                 if not moneyBagContainer then return end
-                
                 local moneyBags = moneyBagContainer:GetChildren()
                 for _, moneyBag in ipairs(moneyBags) do
                     if moneyBag.Name == "MoneyBag" then
                         local prompt = moneyBag:FindFirstChild("CollectPrompt")
                         if prompt and prompt:IsA("ProximityPrompt") then
-                            fireproximityprompt(prompt) -- Tự động nhặt tiền
+                            fireproximityprompt(prompt)
                         end
                     end
                 end
@@ -340,27 +430,86 @@ local function toggleMoneyCollection(state)
     end
 end
 
-collectMoneyButton.MouseButton1Click:Connect(function()
-    toggleMoneyCollection(not moneyCollectionEnabled)
-end)
+collectMoneyButton.MouseButton1Click:Connect(function() toggleMoneyCollection(not moneyCollectionEnabled) end)
 
--- Gắn phím tắt
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end -- Bỏ qua nếu đang nhập text trong GUI
-    
-    local key = input.KeyCode
-    if key == Enum.KeyCode.N then -- Phím N cho NPC Lock
-        toggleNPCLock(not npcLock)
-    elseif key == Enum.KeyCode.C then -- Phím C cho NoClip
-        toggleNoClip(not noclip)
-    elseif key == Enum.KeyCode.V then -- Phím V cho Night Vision
-        if nightVisionEnabled then
-            disableNightVision()
-        else
-            applyNightVision()
+-- Logic Nhặt Băng
+local bandagePickupEnabled = false
+local bandagePickupLoop
+
+local function toggleBandagePickup(state)
+    bandagePickupEnabled = state
+    bandagePickupButton.Text = bandagePickupEnabled and "Nhặt Băng: ON (B)" or "Nhặt Băng: OFF (B)"
+    if bandagePickupEnabled then
+        if not bandagePickupLoop then
+            bandagePickupLoop = runService.Heartbeat:Connect(function()
+                local bandage = workspace:FindFirstChild("RuntimeItems") and workspace.RuntimeItems:FindFirstChild("Bandage")
+                if bandage then
+                    local args = { [1] = bandage }
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Tool"):WaitForChild("PickUpTool"):FireServer(unpack(args))
+                end
+            end)
         end
-    elseif key == Enum.KeyCode.M then -- Phím M cho Thu Túi Tiền
+    else
+        if bandagePickupLoop then
+            bandagePickupLoop:Disconnect()
+            bandagePickupLoop = nil
+        end
+    end
+end
+
+bandagePickupButton.MouseButton1Click:Connect(function() toggleBandagePickup(not bandagePickupEnabled) end)
+
+-- Logic Dùng Băng Tự Động
+local bandageUseEnabled = false
+local bandageUseLoop
+
+local function useBandage()
+    local bandage = player.Backpack:FindFirstChild("Bandage")
+    if bandage and bandage:FindFirstChild("Use") then
+        bandage.Use:FireServer()
+    end
+end
+
+local function toggleBandageUse(state)
+    bandageUseEnabled = state
+    bandageUseButton.Text = bandageUseEnabled and "Dùng Băng: ON (U)" or "Dùng Băng: OFF (U)"
+    if bandageUseEnabled then
+        if not bandageUseLoop then
+            bandageUseLoop = runService.Heartbeat:Connect(function()
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    local humanoid = player.Character.Humanoid
+                    if humanoid.Health < healthThreshold then
+                        useBandage()
+                    end
+                end
+            end)
+        end
+    else
+        if bandageUseLoop then
+            bandageUseLoop:Disconnect()
+            bandageUseLoop = nil
+        end
+    end
+end
+
+bandageUseButton.MouseButton1Click:Connect(function() toggleBandageUse(not bandageUseEnabled) end)
+
+-- Phím tắt
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.N then
+        toggleNPCLock(not npcLock)
+    elseif key == Enum.KeyCode.C then
+        toggleNoClip(not noclip)
+    elseif key == Enum.KeyCode.V then
+        if nightVisionEnabled then disableNightVision() else applyNightVision() end
+    elseif key == Enum.KeyCode.M then
         toggleMoneyCollection(not moneyCollectionEnabled)
+    elseif key == Enum.KeyCode.B then
+        toggleBandagePickup(not bandagePickupEnabled)
+    elseif key == Enum.KeyCode.U then
+        toggleBandageUse(not bandageUseEnabled)
     end
 end)
 
@@ -377,7 +526,6 @@ local openCorner = Instance.new("UICorner")
 openCorner.CornerRadius = UDim.new(0, 8)
 openCorner.Parent = openButton
 
--- Áp dụng draggable cho nút Open/Close
 makeDraggable(openButton)
 
 openButton.MouseButton1Click:Connect(function()
