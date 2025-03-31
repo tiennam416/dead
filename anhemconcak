@@ -38,7 +38,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 40)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "AnhemconCak Menu"
+title.Text = "Utility Menu"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.GothamBold
 title.TextSize = 20
@@ -52,12 +52,13 @@ tabFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 tabFrame.BorderSizePixel = 0
 tabFrame.Parent = mainFrame
 
+-- Hàm tạo nút Tab với màu khác
 local function createTabButton(name, position, text)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Size = UDim2.new(0.5, 0, 1, 0)
     button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BackgroundColor3 = Color3.fromRGB(70, 50, 90) -- Màu tím đậm cho tab
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
@@ -93,13 +94,13 @@ tab2Content.BackgroundTransparency = 1
 tab2Content.Parent = contentFrame
 tab2Content.Visible = false
 
--- Hàm tạo nút
+-- Hàm tạo nút (giữ màu xám đậm cho các nút khác)
 local function createButton(name, position, text, parent)
     local button = Instance.new("TextButton")
     button.Name = name
     button.Size = UDim2.new(0, 200, 0, 40)
     button.Position = position
-    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Màu xám đậm cho các nút khác
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Text = text
     button.Font = Enum.Font.Gotham
@@ -218,12 +219,12 @@ end
 
 makeDraggable(mainFrame)
 
--- Chuyển đổi tab
+-- Chuyển đổi tab với màu khác khi chọn
 local function switchTab(tabToShow, tabToHide)
     tabToShow.Visible = true
     tabToHide.Visible = false
-    tab1Button.BackgroundColor3 = tabToShow == tab1Content and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
-    tab2Button.BackgroundColor3 = tabToShow == tab2Content and Color3.fromRGB(70, 70, 70) or Color3.fromRGB(50, 50, 50)
+    tab1Button.BackgroundColor3 = tabToShow == tab1Content and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90) -- Tím sáng khi chọn
+    tab2Button.BackgroundColor3 = tabToShow == tab2Content and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90) -- Tím sáng khi chọn
 end
 
 tab1Button.MouseButton1Click:Connect(function() switchTab(tab1Content, tab2Content) end)
