@@ -255,7 +255,7 @@ local function getClosestNPC()
         if object:IsA("Model") then
             local humanoid = object:FindFirstChild("Humanoid")
             local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
-            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" and object.Name ~= "Woft" and object.Name ~= "Wolf" then
+            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Model_Horse" and object.Name ~= "Woft" and object.Name ~= "Wolf" then
                 local isPlayer = Players:GetPlayerFromCharacter(object) ~= nil
                 if not isPlayer then
                     local distance = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
@@ -457,12 +457,8 @@ local function createESP(model)
 end
 
 local function applyESPToModel(model)
-    if espEnabled and model:IsA("Model") then
-        local humanoid = model:FindFirstChild("Humanoid")
-        if humanoid and Players:GetPlayerFromCharacter(model) == nil then
+    
             createESP(model)
-        end
-    end
 end
 
 local function toggleESP(state)
