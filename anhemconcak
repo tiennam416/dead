@@ -61,7 +61,7 @@ tabFrame.Parent = mainFrame
 local function createTabButton(name, position, text)
     local button = Instance.new("TextButton")
     button.Name = name
-    button.Size = UDim2.new(0.5, 0, 1, 0)
+    button.Size = UDim2.new(0.33, 0, 1, 0) -- Chia đều cho 3 tab
     button.Position = position
     button.BackgroundColor3 = Color3.fromRGB(70, 50, 90)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -78,7 +78,8 @@ local function createTabButton(name, position, text)
 end
 
 local tab1Button = createTabButton("Tab1", UDim2.new(0, 0, 0, 0), "Main")
-local tab2Button = createTabButton("Tab2", UDim2.new(0.5, 0, 0, 0), "Auto")
+local tab2Button = createTabButton("Tab2", UDim2.new(0.33, 0, 0, 0), "Auto")
+local tab3Button = createTabButton("Tab3", UDim2.new(0.66, 0, 0, 0), "TP")
 
 -- Tạo Content Frame
 local contentFrame = Instance.new("Frame")
@@ -98,6 +99,12 @@ tab2Content.Size = UDim2.new(1, 0, 1, 0)
 tab2Content.BackgroundTransparency = 1
 tab2Content.Parent = contentFrame
 tab2Content.Visible = false
+
+local tab3Content = Instance.new("Frame")
+tab3Content.Size = UDim2.new(1, 0, 1, 0)
+tab3Content.BackgroundTransparency = 1
+tab3Content.Parent = contentFrame
+tab3Content.Visible = false
 
 -- Hàm tạo nút
 local function createButton(name, position, text, parent)
@@ -125,10 +132,13 @@ local noclipButton = createButton("NoClip", UDim2.new(0.5, -100, 0, 70), "NoClip
 local nightVisionButton = createButton("NightVision", UDim2.new(0.5, -100, 0, 120), "Nhìn Trong Đêm: OFF (V)", tab1Content)
 local espButton = createButton("ESP", UDim2.new(0.5, -100, 0, 170), "ESP: OFF (E)", tab1Content)
 
--- Tab 2: Money
+-- Tab 2: Auto
 local collectMoneyButton = createButton("CollectMoney", UDim2.new(0.5, -100, 0, 20), "Thu Túi Tiền: OFF (M)", tab2Content)
 local bandagePickupButton = createButton("AutoBandagePickup", UDim2.new(0.5, -100, 0, 70), "Nhặt Băng: OFF (B)", tab2Content)
 local bandageUseButton = createButton("AutoBandageUse", UDim2.new(0.5, -100, 0, 120), "Dùng Băng: OFF (U)", tab2Content)
+
+-- Tab 3: Teleport
+local tpToTrainButton = createButton("TPToTrain", UDim2.new(0.5, -100, 0, 20), "TP To Train (Y)", tab3Content)
 
 -- Thanh chỉnh máu
 local healthSliderFrame = Instance.new("Frame")
@@ -234,15 +244,18 @@ end
 makeDraggable(mainFrame)
 
 -- Chuyển đổi tab
-local function switchTab(tabToShow, tabToHide)
-    tabToShow.Visible = true
-    tabToHide.Visible = false
-    tab1Button.BackgroundColor3 = tabToShow == tab1Content and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90)
-    tab2Button.BackgroundColor3 = tabToShow == tab2Content and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90)
+local function switchTab(tabToShow)
+    tab1Content.Visible = (tabToShow == tab1Content)
+    tab2Content.Visible = (tabToShow == tab2Content)
+    tab3Content.Visible = (tabToShow == tab3Content)
+    tab1Button.BackgroundColor3 = (tabToShow == tab1Content) and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90)
+    tab2Button.BackgroundColor3 = (tabToShow == tab2Content) and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90)
+    tab3Button.BackgroundColor3 = (tabToShow == tab3Content) and Color3.fromRGB(90, 70, 110) or Color3.fromRGB(70, 50, 90)
 end
 
-tab1Button.MouseButton1Click:Connect(function() switchTab(tab1Content, tab2Content) end)
-tab2Button.MouseButton1Click:Connect(function() switchTab(tab2Content, tab1Content) end)
+tab1Button.MouseButton1Click:Connect(function() switchTab(tab1Content) end)
+tab2Button.MouseButton1Click:Connect(function() switchTab(tab2Content) end)
+tab3Button.MouseButton1Click:Connect(function() switchTab(tab3Content) end)
 
 -- Logic NPC Lock
 local npcLock = false
@@ -424,14 +437,13 @@ local function createESP(model)
     local head = model:FindFirstChild("Head")
     if not humanoid or not head then return end
 
-    -- Kiểm tra xem đã có ESP chưa để tránh trùng lặp
     if head:FindFirstChild("ESP") then return end
 
     local billboard = Instance.new("BillboardGui")
     billboard.Name = "ESP"
     billboard.Parent = head
     billboard.Adornee = head
-    billboard.Size = UDim2.new(0, 100, 0, 50) -- Tăng kích thước để chứa tên dài
+    billboard.Size = UDim2.new(0, 100, 0, 50)
     billboard.StudsOffset = Vector3.new(0, 2, 0)
     billboard.AlwaysOnTop = true
 
@@ -440,8 +452,8 @@ local function createESP(model)
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.BackgroundTransparency = 1
     textLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
-    textLabel.TextScaled = false -- Tắt TextScaled để chữ đồng đều
-    textLabel.TextSize = 16 -- Kích thước chữ cố định
+    textLabel.TextScaled = false
+    textLabel.TextSize = 16
     textLabel.Font = Enum.Font.SourceSans
 
     local function updateESP()
@@ -457,31 +469,31 @@ local function createESP(model)
 end
 
 local function applyESPToModel(model)
-    
+    if espEnabled and model:IsA("Model") then
+        local humanoid = model:FindFirstChild("Humanoid")
+        if humanoid and Players:GetPlayerFromCharacter(model) == nil then
             createESP(model)
+        end
+    end
 end
 
 local function toggleESP(state)
     espEnabled = state
     espButton.Text = espEnabled and "ESP: ON (E)" or "ESP: OFF (E)"
     if espEnabled then
-        -- Áp dụng ESP cho tất cả model hiện có
         for _, model in pairs(workspace:GetDescendants()) do
             applyESPToModel(model)
         end
-        -- Kết nối cho các descendant mới
         if not espConnection then
             espConnection = workspace.DescendantAdded:Connect(applyESPToModel)
         end
     else
-        -- Xóa tất cả ESP
         for _, head in pairs(workspace:GetDescendants()) do
             if head:IsA("BasePart") then
                 local esp = head:FindFirstChild("ESP")
                 if esp then esp:Destroy() end
             end
         end
-        -- Ngắt kết nối
         if espConnection then
             espConnection:Disconnect()
             espConnection = nil
@@ -586,6 +598,39 @@ end
 
 bandageUseButton.MouseButton1Click:Connect(function() toggleBandageUse(not bandageUseEnabled) end)
 
+-- Logic TP To Train
+local function teleportToTrain()
+    local seat = workspace:FindFirstChild("Train") and workspace.Train:FindFirstChild("TrainControls") and workspace.Train.TrainControls:FindFirstChild("ConductorSeat") and workspace.Train.TrainControls.ConductorSeat:FindFirstChild("VehicleSeat")
+    if seat then
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = CFrame.new(seat.Position)
+            StarterGui:SetCore("SendNotification", {
+                Title = "TP To Train",
+                Text = "Teleported to train!",
+                Duration = 2
+            })
+        else
+            warn("Character or HumanoidRootPart not found!")
+            StarterGui:SetCore("SendNotification", {
+                Title = "TP To Train",
+                Text = "Character not found!",
+                Duration = 2
+            })
+        end
+    else
+        warn("Train seat not found!")
+        StarterGui:SetCore("SendNotification", {
+            Title = "TP To Train",
+            Text = "Train seat not found!",
+            Duration = 2
+        })
+    end
+end
+
+tpToTrainButton.MouseButton1Click:Connect(function()
+    teleportToTrain()
+end)
+
 -- Phím tắt
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
@@ -604,6 +649,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         toggleBandagePickup(not bandagePickupEnabled)
     elseif key == Enum.KeyCode.U then
         toggleBandageUse(not bandageUseEnabled)
+    elseif key == Enum.KeyCode.Y then
+        teleportToTrain()
     end
 end)
 
