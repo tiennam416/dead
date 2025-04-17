@@ -139,7 +139,7 @@ local bandageUseButton = createButton("AutoBandageUse", UDim2.new(0.5, -100, 0, 
 
 -- Tab 3: Teleport
 local tpToTrainButton = createButton("TPToTrain", UDim2.new(0.5, -100, 0, 20), "TP To Train (Y)", tab3Content)
-local VehicleFly = createButton("VFly", UDim2.new(0.5, -100, 0, 70), "VehicleFly", tab3Content)
+local VehicleFlyButton = createButton("VFly", UDim2.new(0.5, -100, 0, 70), "VehicleFly", tab3Content)
 
 -- Thanh chỉnh máu
 local healthSliderFrame = Instance.new("Frame")
@@ -637,7 +637,7 @@ local function vfly()
 loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
 end
 
-VFly.MouseButton1Click:Connect(function()
+VehicleFlyButton.MouseButton1Click:Connect(function()
     vfly()
 end)
 
