@@ -641,16 +641,7 @@ VehicleFlyButton.MouseButton1Click:Connect(function()
 end)
 --ULH
 local function UlHorse()
--- Script phía server
-for _, player in pairs(game.Players:GetPlayers()) do
-    local character = player.Character
-    if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
-            humanoid.SeatPart.Disabled = false
-        end
-    end
-end
+print("anhemconcak")
 end
 ULHButton.MouseButton1Click:Connect(function()
    UlHorse()
