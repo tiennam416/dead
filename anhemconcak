@@ -142,6 +142,8 @@ local tpToTrainButton = createButton("TPToTrain", UDim2.new(0.5, -100, 0, 20), "
 
 local VehicleFlyButton = createButton("VehicleFly", UDim2.new(0.5, -100, 0, 70), "VehicleFly", tab3Content)
 
+local ULHButton = createButton("ULH", UDim2.new(0.5, -100, 0, 120), "Ngồi ngự ko cần yên", tab3Content)
+
 -- Thanh chỉnh máu
 local healthSliderFrame = Instance.new("Frame")
 healthSliderFrame.Size = UDim2.new(0, 200, 0, 30)
@@ -433,12 +435,12 @@ end)
 local espEnabled = false
 local espConnection
 
+-- Hàm tạo ESP cho model
 local function createESP(model)
     if not espEnabled then return end
     local humanoid = model:FindFirstChild("Humanoid")
     local head = model:FindFirstChild("Head")
     if not humanoid or not head then return end
-
     if head:FindFirstChild("ESP") then return end
 
     local billboard = Instance.new("BillboardGui")
@@ -453,7 +455,9 @@ local function createESP(model)
     textLabel.Parent = billboard
     textLabel.Size = UDim2.new(1, 0, 1, 0)
     textLabel.BackgroundTransparency = 1
-    textLabel.TextColor3 = Color3.fromRGB(230, 230, 230)
+    -- Kiểm tra xem model có phải là nhân vật của người chơi không
+    local isPlayer = Players:GetPlayerFromCharacter(model) ~= nil
+    textLabel.TextColor3 = isPlayer and Color3.fromRGB(135, 206, 250) or Color3.fromRGB(230, 230, 230) -- Xanh nhạt cho người chơi, xám nhạt cho NPC
     textLabel.TextScaled = false
     textLabel.TextSize = 16
     textLabel.Font = Enum.Font.SourceSans
@@ -470,10 +474,11 @@ local function createESP(model)
     updateESP()
 end
 
+-- Hàm áp dụng ESP cho model
 local function applyESPToModel(model)
     if espEnabled and model:IsA("Model") then
         local humanoid = model:FindFirstChild("Humanoid")
-        if humanoid and Players:GetPlayerFromCharacter(model) == nil then
+        if humanoid then
             createESP(model)
         end
     end
@@ -641,6 +646,25 @@ end
 VehicleFlyButton.MouseButton1Click:Connect(function()
     VFly()
 end)
+
+--ULH
+local function Ulh()
+-- Script phía server
+for _, player in pairs(game.Players:GetPlayers()) do
+    local character = player.Character
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.SeatPart and humanoid.SeatPart:IsA("VehicleSeat") then
+            humanoid.SeatPart.Disabled = false
+        end
+    end
+end
+end
+
+ULHButton.MouseButton1Click:Connect(function()
+    Ulh()
+end)
+
 -- Phím tắt
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
