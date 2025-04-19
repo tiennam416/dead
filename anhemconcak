@@ -140,7 +140,6 @@ local bandageUseButton = createButton("AutoBandageUse", UDim2.new(0.5, -100, 0, 
 -- Tab 3: Teleport
 local tpToTrainButton = createButton("TPToTrain", UDim2.new(0.5, -100, 0, 20), "TP To Train (Y)", tab3Content)
 local VehicleFlyButton = createButton("VFly", UDim2.new(0.5, -100, 0, 70), "VehicleFly", tab3Content)
-local ULHButton = createButton("ULH", UDim2.new(0.5, -100, 0, 120), "Ngồi lên người(Class Horse)", tab3Content)
 -- Thanh chỉnh máu
 local healthSliderFrame = Instance.new("Frame")
 healthSliderFrame.Size = UDim2.new(0, 200, 0, 30)
@@ -639,13 +638,7 @@ end
 VehicleFlyButton.MouseButton1Click:Connect(function()
     vfly()
 end)
---ULH
-local function UlHorse()
-print("anhemconcak")
-end
-ULHButton.MouseButton1Click:Connect(function()
-   UlHorse()
-end)
+
 -- Phím tắt
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
