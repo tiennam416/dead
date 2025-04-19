@@ -471,8 +471,7 @@ end
 
 local function applyESPToModel(model)
     if espEnabled and model:IsA("Model") then
-        local humanoid = model:FindFirstChild("Humanoid")
-        if humanoid and Players:GetPlayerFromCharacter(model) == nil then
+        local humanoid = model:FindFirstChild("Humanoid")       
             createESP(model)
         end
     end
