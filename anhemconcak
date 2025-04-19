@@ -654,7 +654,7 @@ end
 end
 ULHButton.MouseButton1Click:Connect(function()
    UlHorse()
-end
+end)
 -- Phím tắt
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
